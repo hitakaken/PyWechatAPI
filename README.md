@@ -1,6 +1,6 @@
 # PyWechatAPI
 
-微信公众号开发 Python API
+[微信公众号](https://mp.weixin.qq.com)开发 Python API
 
 ## 快速开始
 1. 安装PyWechatAPI
