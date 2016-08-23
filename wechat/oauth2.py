@@ -28,7 +28,7 @@ Refresh_TOKEN_QUERY_PARAMS = ['appid', 'grant_type', 'refresh_token']
 GET_USER_INFO_URL = 'https://api.weixin.qq.com/sns/userinfo'
 GET_USER_INFO_QUERY_PARAMS = ['access_token', 'openid', 'lang']
 # 附：检验授权凭证（access_token）是否有效
-VALIDATE_ACCESS_TOKEN_URL  = 'https://api.weixin.qq.com/sns/auth'
+VALIDATE_ACCESS_TOKEN_URL = 'https://api.weixin.qq.com/sns/auth'
 VALIDATE_ACCESS_TOKEN_QUERY_PARAMS = ['access_token', 'openid']
 
 
@@ -68,6 +68,13 @@ class Oauth2API(BaseAPI):
             raise Exception('Missing Required Query Params:' + json.dumps(missing))
         return self.get_url(AUTHORIZE_URL, AUTHORIZE_QUERY_PARAMS,  **kwargs)
 
+    @staticmethod
+    def is_authorized(request_args):
+        """判断用户是否授权
+        用户如果没有授权，则request.args不存在code
+        """
+        return request_args is not None and type(request_args) == dict and 'code' in request_args
+
     def exchange_code(self, code=None, **kwargs):
         """第二步：通过code换取网页授权access_token
 
@@ -103,7 +110,10 @@ class Oauth2API(BaseAPI):
             raise Exception('Missing Required Query Params:' + json.dumps(missing))
         resp = self.get(EXCHANGE_CODE_URL, EXCHANGE_CODE_QUERY_PARAMS, **kwargs)
         resp.encoding = 'utf-8'
-        return json.loads(resp.text)
+        result = json.loads(resp.text)
+        if 'errcode' in result:
+            raise Exception(resp.text)
+        return result
 
     def refresh_token(self, refresh_token=None, **kwargs):
         """第三步：刷新access_token（如果需要）
@@ -139,7 +149,10 @@ class Oauth2API(BaseAPI):
             raise Exception('Missing Required Query Params:' + json.dumps(missing))
         resp = self.get(Refresh_TOKEN_URL, Refresh_TOKEN_QUERY_PARAMS, **kwargs)
         resp.encoding = 'utf-8'
-        return json.loads(resp.text)
+        result = json.loads(resp.text)
+        if 'errcode' in result:
+            raise Exception(resp.text)
+        return result
 
     def get_user_info(self, access_token=None, openid=None, **kwargs):
         """第四步：拉取用户信息(需scope为 snsapi_userinfo)
@@ -181,7 +194,10 @@ class Oauth2API(BaseAPI):
             raise Exception('Missing Required Query Params:' + json.dumps(missing))
         resp = self.get(GET_USER_INFO_URL, GET_USER_INFO_QUERY_PARAMS, **kwargs)
         resp.encoding = 'utf-8'
-        return json.loads(resp.text)
+        result = json.loads(resp.text)
+        if 'errcode' in result:
+            raise Exception(resp.text)
+        return result
 
     def validate_access_token(self, access_token=None, openid=None, **kwargs):
         """附：检验授权凭证（access_token）是否有效
@@ -209,6 +225,9 @@ class Oauth2API(BaseAPI):
             raise Exception('Missing Required Query Params:' + json.dumps(missing))
         resp = self.get(VALIDATE_ACCESS_TOKEN_URL, VALIDATE_ACCESS_TOKEN_QUERY_PARAMS, **kwargs)
         resp.encoding = 'utf-8'
-        return json.loads(resp.text)
+        result = json.loads(resp.text)
+        if 'errcode' in result and result['errcode'] > 0:
+            raise Exception(resp.text)
+        return result
 
 
