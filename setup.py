@@ -1,7 +1,10 @@
 from setuptools import setup
 
 with open('README.md') as f:
-    readme = f.read()
+    Readme = f.read()
+
+with open('LICENSE') as f:
+    License = f.read()
 
 install_requires = [
     "requests"
@@ -9,13 +12,13 @@ install_requires = [
 
 setup(
     name='PyWechatAPI',
-    version='0.0.1',
+    version='0.0.3',
     description='WeChat Develop Python API',
-    long_description=readme,
+    long_description=Readme,
     author='CaoKe',
     author_email='hitakaken@gmail.com',
     url='https://github.com/hitakaken/PyWechatAPI.git',
-    license='MIT',
+    license=License,
     platforms=["any"],
     packages=['wechat'],
     # test_suite="test.tests",
