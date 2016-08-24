@@ -4,11 +4,9 @@
 
 ## 快速开始
 1. 安装PyWechatAPI(*还未上传)
-
 ```
 pip install PyWechatAPI
 ```
-
 2. 调用API示例
 ```python
 # 初始化客户端
@@ -21,9 +19,7 @@ wechat = WechatAPI(
     redirect_uri={{REDIRECT_URI}}  # 回调处理请求地址
 )
 ```
-
 3. 网页授权示例
-
 ```python
 # 第一步，获取微信授权网址，可带上用户识别参数
 authorize_url = wechat.get_authorize_url(state='User:%s' % ({{USER_ID}}))
@@ -52,6 +48,4 @@ token = wechat.refresh_token(refresh_token=token['refresh_token'])
 
 # 第四步：拉取用户信息(需scope为 snsapi_userinfo)
 user_info = wechat.get_user_info(access_token=access_token, openid=openid)
-
-
 ```
