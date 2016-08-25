@@ -16,7 +16,7 @@ class WechatAPI(Oauth2API):
         if appid is not None:
             kwargs['appid'] = appid
         if secret is not None:
-            kwargs['secret'] = appid
+            kwargs['secret'] = secret
         super(WechatAPI, self).__init__(**kwargs)
 
 

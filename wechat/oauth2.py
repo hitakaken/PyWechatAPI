@@ -73,7 +73,7 @@ class Oauth2API(BaseAPI):
         """判断用户是否授权
         用户如果没有授权，则request.args不存在code
         """
-        return request_args is not None and 'code' in request_args
+        return request_args is not None and request_args.get('code') is not None
 
     def exchange_code(self, code=None, **kwargs):
         """第二步：通过code换取网页授权access_token
