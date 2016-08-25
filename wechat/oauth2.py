@@ -66,7 +66,7 @@ class Oauth2API(BaseAPI):
         valid, missing = self.validate_required_params(AUTHORIZE_QUERY_PARAMS, **kwargs)
         if not valid:
             raise Exception('Missing Required Query Params:' + json.dumps(missing))
-        return self.get_url(AUTHORIZE_URL, AUTHORIZE_QUERY_PARAMS,  **kwargs)
+        return self.get_url(AUTHORIZE_URL, AUTHORIZE_QUERY_PARAMS,  **kwargs) + '#wechat_redirect'
 
     @staticmethod
     def is_authorized(request_args):

@@ -31,10 +31,10 @@ class BaseAPI(object):
 
     def get_url(self, url, params=None, **kwargs):
         if params is not None:
-            query = {}
+            query = []
             for param in params:
-                query[param] = kwargs[param] if param in kwargs else self.defaults[param]
-            url = url + '?' + urlencode(query)
+                query.append(param + '=' + quote(kwargs[param] if param in kwargs else self.defaults[param]))
+            url = url + '?' + '&'.join(query)
         return url
 
     def get(self, url, params=None, **kwargs):
