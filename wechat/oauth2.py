@@ -147,12 +147,7 @@ class Oauth2API(BaseAPI):
         valid, missing = self.validate_required_params(Refresh_TOKEN_QUERY_PARAMS, **kwargs)
         if not valid:
             raise Exception('Missing Required Query Params:' + json.dumps(missing))
-        resp = self.get(Refresh_TOKEN_URL, Refresh_TOKEN_QUERY_PARAMS, **kwargs)
-        resp.encoding = 'utf-8'
-        result = json.loads(resp.text)
-        if 'errcode' in result:
-            raise Exception(resp.text)
-        return result
+        return self.get_json(Refresh_TOKEN_URL, Refresh_TOKEN_QUERY_PARAMS, **kwargs)
 
     def get_user_info(self, access_token=None, openid=None, **kwargs):
         """第四步：拉取用户信息(需scope为 snsapi_userinfo)
@@ -192,12 +187,7 @@ class Oauth2API(BaseAPI):
         valid, missing = self.validate_required_params(GET_USER_INFO_QUERY_PARAMS, **kwargs)
         if not valid:
             raise Exception('Missing Required Query Params:' + json.dumps(missing))
-        resp = self.get(GET_USER_INFO_URL, GET_USER_INFO_QUERY_PARAMS, **kwargs)
-        resp.encoding = 'utf-8'
-        result = json.loads(resp.text)
-        if 'errcode' in result:
-            raise Exception(resp.text)
-        return result
+        return self.get_json(GET_USER_INFO_URL, GET_USER_INFO_QUERY_PARAMS, **kwargs)
 
     def validate_access_token(self, access_token=None, openid=None, **kwargs):
         """附：检验授权凭证（access_token）是否有效
@@ -223,11 +213,4 @@ class Oauth2API(BaseAPI):
         valid, missing = self.validate_required_params(VALIDATE_ACCESS_TOKEN_QUERY_PARAMS, **kwargs)
         if not valid:
             raise Exception('Missing Required Query Params:' + json.dumps(missing))
-        resp = self.get(VALIDATE_ACCESS_TOKEN_URL, VALIDATE_ACCESS_TOKEN_QUERY_PARAMS, **kwargs)
-        resp.encoding = 'utf-8'
-        result = json.loads(resp.text)
-        if 'errcode' in result and result['errcode'] > 0:
-            raise Exception(resp.text)
-        return result
-
-
+        return self.get_json(VALIDATE_ACCESS_TOKEN_URL, VALIDATE_ACCESS_TOKEN_QUERY_PARAMS, **kwargs)

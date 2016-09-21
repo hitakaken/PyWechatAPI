@@ -9,14 +9,19 @@ Date:   2016-08-23
 Description: WeChat HttpClient Base
 """
 
-from urllib import urlencode, quote
+from urllib import quote
+import json
 import requests
+
+ACCESS_TOKEN_URL = 'https://api.weixin.qq.com/cgi-bin/token'
+ACCESS_TOKEN_QUERY_PARAMS = ['grant_type', 'appid', 'secret']
 
 
 class BaseAPI(object):
     def __init__(self, **kwargs):
         self.defaults = kwargs
         self.session = requests.Session()
+        self.access_token = None
         if 'retry' in self.defaults:
             from requests.adapters import HTTPAdapter
             self.session.mount('http://', HTTPAdapter(max_retries=self.defaults['retry']))
@@ -39,3 +44,15 @@ class BaseAPI(object):
 
     def get(self, url, params=None, **kwargs):
         return self.session.get(self.get_url(url, params=params, **kwargs))
+
+    def get_json(self, url, params=None,**kwargs):
+        resp = self.get(url, params, **kwargs)
+        resp.encoding = 'utf-8'
+        result = json.loads(resp.text)
+        if 'errcode' in result:
+            raise Exception(resp.text)
+        return result
+
+    def get_access_token(self):
+        result = self.get_json(ACCESS_TOKEN_URL, params=ACCESS_TOKEN_QUERY_PARAMS, grant_type='client_credential')
+        pass
