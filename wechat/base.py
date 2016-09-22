@@ -9,10 +9,12 @@ Date:   2016-08-23
 Description: WeChat HttpClient Base
 """
 
-from urllib import quote
+import datetime
 import json
 import requests
+from urllib import quote
 
+EXPIRED_LEEWAY = 60
 ACCESS_TOKEN_URL = 'https://api.weixin.qq.com/cgi-bin/token'
 ACCESS_TOKEN_QUERY_PARAMS = ['grant_type', 'appid', 'secret']
 
@@ -22,6 +24,7 @@ class BaseAPI(object):
         self.defaults = kwargs
         self.session = requests.Session()
         self.access_token = None
+        self.access_token_expired = None
         if 'retry' in self.defaults:
             from requests.adapters import HTTPAdapter
             self.session.mount('http://', HTTPAdapter(max_retries=self.defaults['retry']))
@@ -38,7 +41,9 @@ class BaseAPI(object):
         if params is not None:
             query = []
             for param in params:
-                query.append(param + '=' + quote(kwargs[param] if param in kwargs else self.defaults[param]))
+                value = kwargs[param] if param in kwargs else self.defaults.get(param, None)
+                if value is not None:
+                    query.append(param + '=' + quote(value))
             url = url + '?' + '&'.join(query)
         return url
 
@@ -54,5 +59,13 @@ class BaseAPI(object):
         return result
 
     def get_access_token(self):
-        result = self.get_json(ACCESS_TOKEN_URL, params=ACCESS_TOKEN_QUERY_PARAMS, grant_type='client_credential')
-        pass
+        now = datetime.datetime.now()
+        if self.access_token is None or self.access_token_expired is None or now > self.access_token_expired:
+            result = self.get_json(
+                ACCESS_TOKEN_URL,
+                params=ACCESS_TOKEN_QUERY_PARAMS,
+                grant_type='client_credential')
+            self.access_token = result['access_token']
+            expired_in = result['expires_in'] - EXPIRED_LEEWAY
+            self.access_token_expired = now + datetime.timedelta(seconds=expired_in)
+        return self.access_token
