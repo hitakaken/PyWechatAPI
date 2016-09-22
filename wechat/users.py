@@ -23,4 +23,4 @@ class UsersAPI(BaseAPI):
         result = self.get_json(USERS_URL, params=USERS_QUERY_PARAMS,
                                access_token=self.get_access_token(), next_openid=next_openid)
         return result.get('data', {}).get('openid', []), \
-               result['total'], result['count'], result['next_openid']
+               result['total'], result['count'], result.get('next_openid', None)
