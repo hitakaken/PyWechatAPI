@@ -13,6 +13,8 @@ from wechat.base import BaseAPI
 
 USERS_URL = 'https://api.weixin.qq.com/cgi-bin/user/get'
 USERS_QUERY_PARAMS = ['access_token', 'next_openid']
+USER_INFO_URL = 'https://api.weixin.qq.com/cgi-bin/user/info'
+USER_INFO_QUERY_PARAMS = ['access_token', 'openid', 'lang']
 
 
 class UsersAPI(BaseAPI):
@@ -24,3 +26,7 @@ class UsersAPI(BaseAPI):
                                access_token=self.get_access_token(), next_openid=next_openid)
         return result.get('data', {}).get('openid', []), \
                result['total'], result['count'], result.get('next_openid', None)
+
+    def get_user_info(self, openid=None):
+        return self.get_json(USER_INFO_URL, params=USER_INFO_QUERY_PARAMS,
+                             access_token=self.get_access_token(), openid=openid, lang='zh_CN')
