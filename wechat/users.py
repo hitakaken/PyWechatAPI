@@ -27,6 +27,6 @@ class UsersAPI(BaseAPI):
         return result.get('data', {}).get('openid', []), \
                result['total'], result['count'], result.get('next_openid', None)
 
-    def get_user_info(self, openid=None):
+    def get_user(self, openid=None):
         return self.get_json(USER_INFO_URL, params=USER_INFO_QUERY_PARAMS,
                              access_token=self.get_access_token(), openid=openid, lang='zh_CN')
