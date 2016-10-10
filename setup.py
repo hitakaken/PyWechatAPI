@@ -12,7 +12,7 @@ install_requires = [
 
 setup(
     name='PyWechatAPI',
-    version='0.0.5',
+    version='0.0.6',
     description='WeChat Develop Python API',
     long_description=Readme,
     author='CaoKe',
