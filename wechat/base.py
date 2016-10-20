@@ -51,7 +51,18 @@ class BaseAPI(object):
         return self.session.get(self.get_url(url, params=params, **kwargs))
 
     def get_json(self, url, params=None,**kwargs):
-        resp = self.get(url, params, **kwargs)
+        resp = self.get(url, params=params, **kwargs)
+        resp.encoding = 'utf-8'
+        result = json.loads(resp.text)
+        if 'errcode' in result:
+            raise Exception(resp.text)
+        return result
+
+    def post(self, url, payload, params=None, **kwargs):
+        return self.session.post(self.get_url(url, params=params, **kwargs), json=payload)
+
+    def post_json(self, url, payload, params=None, **kwargs):
+        resp = self.post(url, payload, params=params, **kwargs)
         resp.encoding = 'utf-8'
         result = json.loads(resp.text)
         if 'errcode' in result:
